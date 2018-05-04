@@ -1,0 +1,32 @@
+{
+  "name": "kemofuresorter",
+  "version": "0.0.1",
+  "description": "Kemono Friends Sorter Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app/main.js",
+    "test": "nodemon app/main.js",
+    "migrate": "node migration/main.js"
+  },
+  "keywords": [
+    "kemono",
+    "friends"
+  ],
+  "author": "devsfiq",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^2.2.1",
+    "dotenv": "^5.0.1",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-logger": "^3.2.0",
+    "koa-mount": "^3.0.0",
+    "koa-router": "^7.4.0",
+    "mongoose": "^5.0.16",
+    "mongoose-timestamp": "^0.6.0",
+    "mongoose-unique-array": "^0.2.0",
+    "mongoose-version": "^1.1.0",
+    "underscore": "^1.9.0",
+    "validator": "^9.4.1"
+  }
+}
