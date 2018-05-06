@@ -1,9 +1,9 @@
-const Character = require("../models/character");
-const mongoose = require("mongoose");
+const Character = require('../models/character');
+const db = require('../models/db');
 
 module.exports = {
-    getCharacters: async (ctx) => {
-        await mongoose.connect(process.env.DATABASE_URL);
+    getCharacters: async ctx => {
+        await db.connect(ctx);
         ctx.body = await Character.find();
     }
 }

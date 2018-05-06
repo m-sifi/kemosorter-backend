@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Result = new mongoose.Schema({
     name: { type: String, required: true, index: true, unique: true },
@@ -7,12 +7,12 @@ const Result = new mongoose.Schema({
 
     ranking: [{
         rank: Number,
-        character: { type: mongoose.Schema.Types.ObjectId, ref: "Character" }
+        character: { type: mongoose.Schema.Types.ObjectId, ref: 'Character' }
     }]
 }, { collection: 'result' });
 
-// Result.plugin(require("mongoose-version"), { collection: 'result_versions' });
-Result.plugin(require("mongoose-timestamp"),  {
+// Result.plugin(require('mongoose-version'), { collection: 'result_versions' });
+Result.plugin(require('mongoose-timestamp'),  {
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });

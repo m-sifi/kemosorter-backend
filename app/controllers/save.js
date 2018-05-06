@@ -1,42 +1,36 @@
-const Save = require("../models/save");
-const mongoose = require("mongoose");
-const _ = require("underscore");
+const Save = require('../models/save');
+const db = require('../models/db');
+const _ = require('underscore');
 
 module.exports = {
-    // getCategories: async (ctx) => {
-    //     await mongoose.connect(process.env.DATABASE_URL);
-    //     ctx.body = await Save.find();
-    // },
-
-    uploadSave: async (ctx) => {
-        let controller = require("./result");
-        let save = ctx.request.body.save;
+    uploadSave: async ctx => {
+        let controller = require('./result');
+        let save = JSON.parse(ctx.request.body.save);
 
         console.log(save);
 
         if(save) {
-            let characters = save.characters; //save.characterData.match(/.{1,24}/g);
-            // console.log(characters);
+            let characters = save.characters;
 
-            await mongoose.connect(process.env.DATABASE_URL);
+            await db.connect(ctx);
             save.name = await controller.generateResultName(characters);
             ctx.body = await Save.create(save);
         } else {
-            ctx.throw(400, "Sorter save data required");
+            ctx.throw(400, 'Sorter save data required');
         }
     },
 
-    getSave: async (ctx) => {
-        let controller = require("./result");
+    getSave: async ctx => {
+        let controller = require('./result');
         let name = ctx.params.name;
 
         if(name) {
-            await mongoose.connect(process.env.DATABASE_URL);
+            await db.connect(ctx);
             ctx.body = await Save.findOne({ name: name })
                 .populate('characters')
                 .populate('categories');
         } else {
-            ctx.throw(400, "Sorter save data name required");
+            ctx.throw(400, 'Sorter save data name required');
         }
     }
 }
