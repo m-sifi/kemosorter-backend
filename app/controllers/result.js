@@ -1,5 +1,6 @@
 const Character = require('../models/character');
 const Result = require('../models/result');
+const mongoose = require("mongoose");
 const db = require('../models/db');
 const fs = require('../utils/async-fs');
 const str = require('../utils/string');
