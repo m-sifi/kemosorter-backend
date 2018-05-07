@@ -1,15 +1,17 @@
-const Category = require("../app/models/category");
-const Character = require("../app/models/character");
-const Result = require("../app/models/result");
+const Category = require('../app/models/category');
+const Character = require('../app/models/character');
+const Result = require('../app/models/result');
 
-const fs = require("../app/utils/async-fs");
-const mongoose = require("mongoose");
-const vm = require("vm");
-const _ = require("underscore");
+const fs = require('../app/utils/async-fs');
+const mongoose = require('mongoose');
+const stringSimilarity = require('string-similarity');
+const hash = require("object-hash");
+const vm = require('vm');
+const _ = require('underscore');
 
 async function import_category_data() {
     const SOURCE = await (async () => {
-        vm.runInThisContext(await fs.readFile("migration/sorter_characters.js"));
+        vm.runInThisContext(await fs.readFile('migration/sorter_characters.js'));
         return ary_TitleData;
     })();
 
@@ -28,7 +30,7 @@ async function import_category_data() {
 
 async function import_character_data(categories) {
     const SOURCE = await (async () => {
-        vm.runInThisContext(await fs.readFile("migration/sorter_characters.js"));
+        vm.runInThisContext(await fs.readFile('migration/sorter_characters.js'));
         return {
             image_url: str_ImgPath,
             characters: ary_CharacterData
@@ -66,15 +68,41 @@ async function import_character_data(categories) {
     return characters;
 }
 
+// async function update_character_data(categories) {
+//     const SOURCE = await (async () => {
+//         vm.runInThisContext(await fs.readFile('migration/sorter_characters.js'));
+//         return {
+//             characters: _.map(ary_CharacterData, x => {
+//                 return { name: x[1], image: str_ImgPath + x[3] }
+//             })   
+//         };
+//     })();
+
+//     let characters = await Character.find().select({
+//         'name': 1,
+//         'image': 1
+//     });
+
+//     console.log(_.difference(characters, SOURCE.characters));
+//     // console.log(SOURCE.characters);
+
+//     return characters;
+// }
+
 async function import_results_data(characters) {
     const SOURCE = await(async () => {
-        let tmp_data = JSON.parse(await fs.readFile("migration/sorter_data.json")).sorter_data;
-        let tmp_results = JSON.parse(await fs.readFile("migration/sorter_results.json")).sorter_results;
+        let tmp_data = JSON.parse(await fs.readFile('migration/sorter_data.json')).sorter_data;
+        let tmp_results = JSON.parse(await fs.readFile('migration/sorter_results.json')).sorter_results;
         let sorter_data = {};
 
         for(var i = 0; i < tmp_data.length; i++) {
             let tmp = tmp_data[i];
-            sorter_data[tmp.sorter_hash] = JSON.parse(tmp.character_data);
+
+            if(tmp.sorter_hash == hash(JSON.parse(tmp.character_data))) {
+                sorter_data[tmp.sorter_hash] = JSON.parse(tmp.character_data);
+            } else {
+                console.log(`[Warning] "${tmp.sorter_hash}" is not a valid result dataset, skipping..`);
+            }
         }
 
         return {
@@ -92,6 +120,11 @@ async function import_results_data(characters) {
         let tmp_data = SOURCE.sorter_data[tmp.sorter_hash];
         let tmp_result_data = [];
 
+        if(!tmp_data) {
+            console.log(`[Warning] Dataset "${tmp.sorter_hash}" does not exist, skipping..`);
+            continue;
+        }
+
         tmp.results_data = JSON.parse(tmp.results_data);
 
         for(var j = 0; j < tmp.results_data.length; j++) {
@@ -99,28 +132,43 @@ async function import_results_data(characters) {
 
             // If any sorter results data contains an invalid/corrupt index
             if(index >= 0) {
-                let character_name = tmp_data[index][0];
-                let character = characters[character_name];
+                    let character_name = tmp_data[index][0];
+                    let character = {
+                        rank: j + 1,
+                        character: characters[character_name]
+                    }
 
-                // If for some reason a character could not be found, exclude it
-                if(character) {
-                    tmp_result_data.push(character);
-                } else {
-                    console.warn("[Warning] Result: Unable to find Character '" + character_name + "'");
-                }
+                    // If for some reason a character could not be found, exclude it
+                    if(character) {
+                        tmp_result_data.push(character);
+                    } else {
+                        // console.log(character_name);
+                        let similar = (stringSimilarity.findBestMatch(character_name, _.map(characters.raw, x => x.name)).bestMatch.target);
+                        
+                        console.warn(`[Warning] Result: Unable to find Character "${character_name}", using ${similar} instead..`);
+                        character = characters[similar];
+                        tmp_result_data.push(character);
+                    }
             }
         }
 
         if(_.compact(tmp_result_data).length > 0) {
+            // let result = new Result({
+            //     name: tmp.results_sharable_url,
+            //     data: tmp_result_data
+            // });
             let result = new Result({
                 name: tmp.results_sharable_url,
-                data: tmp_result_data
+                timestamp: new Date().getTime(),
+                duration: 1000, // Duration taken during sort
+            
+                ranking: tmp_result_data
             });
 
             sorter_results[result.name] = result;
             sorter_results.raw.push(result);
         } else {
-            console.warn("[Warning] Result: Unable to save Result '" + tmp.results_sharable_url + "'");
+            console.warn(`[Warning] Result: Unable to save Result "${tmp.results_sharable_url}"`);
         }
     }
 
@@ -130,18 +178,19 @@ async function import_results_data(characters) {
 }
 
 async function run() {
-    console.log("Importing Character Data from Kemofure Sorter");
+    console.log('Importing Character Data from Kemofure Sorter');
 
     await mongoose.connect(process.env.DATABASE_URL);
     await mongoose.connection.dropDatabase();
     
     let category_data = await import_category_data();
     let character_data = await import_character_data(category_data);
+    // let character_data = await update_character_data();
     let results_data = await import_results_data(character_data);
 }
 
-require("dotenv").config();
+require('dotenv').config();
 
-run().then(() => console.log("Kemofure Sorter Data migrated successfully")).catch(console.error);
+run().then(() => console.log('Kemofure Sorter Data migrated successfully')).catch(console.error);
 
 module.exports = run;
