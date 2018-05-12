@@ -3,7 +3,21 @@ const db = require('../models/db');
 const _ = require('underscore');
 
 module.exports = {
-    uploadSave: async ctx => {
+    get: async ctx => {
+        let controller = require('./result');
+        let name = ctx.params.name;
+
+        if(name) {
+            await db.connect(ctx);
+            ctx.body = await Save.findOne({ name: name })
+                .populate('characters')
+                .populate('categories');
+        } else {
+            ctx.throw(400, 'Sorter save data name required');
+        }
+    },
+    
+    add: async ctx => {
         let controller = require('./result');
         let save = JSON.parse(ctx.request.body.save);
 
@@ -17,20 +31,6 @@ module.exports = {
             ctx.body = await Save.create(save);
         } else {
             ctx.throw(400, 'Sorter save data required');
-        }
-    },
-
-    getSave: async ctx => {
-        let controller = require('./result');
-        let name = ctx.params.name;
-
-        if(name) {
-            await db.connect(ctx);
-            ctx.body = await Save.findOne({ name: name })
-                .populate('characters')
-                .populate('categories');
-        } else {
-            ctx.throw(400, 'Sorter save data name required');
         }
     }
 }

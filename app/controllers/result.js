@@ -23,12 +23,12 @@ var self = module.exports = {
         }
     },
 
-    listResults: async ctx => {
+    list: async ctx => {
         await db.connect(ctx);
         ctx.body = await Result.find().select('name');
     },
 
-    getResult: async ctx => {
+    get: async ctx => {
         let name = ctx.params.name;
 
         if(name) {
@@ -39,7 +39,7 @@ var self = module.exports = {
         }
     },
     
-    uploadResult: async ctx => {
+    add: async ctx => {
         let result = JSON.parse(ctx.request.body.result);
         
         if(result) {
