@@ -1,3 +1,6 @@
+# Deployment Scripts
+*.bat
+
 # Logs
 logs
 *.log
