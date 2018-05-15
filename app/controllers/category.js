@@ -29,36 +29,36 @@ module.exports = {
     },
 
     add: async ctx => {
+        let token = ctx.request.query.token;
         let body = ctx.request.body;
         let category = new Category(body);
         let error = category.validateSync();
 
-        await db.connect(ctx);
-
-        if(error) {
-            ctx.throw(400, error.message);
-        } else if (await Category.findOne({ name: body.name })) {
-            ctx.throw(400, 'Category already exists');
+        if(token != process.env.SECRET) {
+            ctx.throw(403, 'Invalid Access-Token');
         } else {
-            ctx.body = await Category.create(category);
+            await db.connect(ctx);
+
+            if(error) {
+                ctx.throw(400, error.message);
+            } else if (await Category.findOne({ name: body.name })) {
+                ctx.throw(400, 'Category already exists');
+            } else {
+                ctx.body = await Category.create(category);
+            }
         }
     },
 
     update: async ctx => {
+        let token = ctx.request.query.token;
         let id = ctx.params.id;
         let body = ctx.request.body;
-        let error = (new Category(body)).validateSync();
 
-        await db.connect(ctx);
-
-        if(!validator.isMongoId(id)) {
-            ctx.throw(400, 'Category ID must be a valid ID');
-        } if(error) {
-            ctx.throw(400, error.message);
-        } else if (await Category.findOne({_id: id }) == null) {
-            ctx.throw(400, 'Unable to find Category');
+        if(token != process.env.SECRET) {
+            ctx.throw(403, 'Invalid Access-Token');
         } else {
-            ctx.body = await Category.findByIdAndUpdate(id, body);
+            await db.connect(ctx);
+            ctx.body = await Category.findByIdAndUpdate(id, body, { new: true, runValidators: true});
         }
     },
 

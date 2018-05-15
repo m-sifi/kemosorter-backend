@@ -3,7 +3,8 @@ const Router = require('koa-router');
 const controller = require('../controllers/save');
 const router = new Router();
 
-router.get('/:name', controller.get);
-router.post('/', controller.add);
+router
+    .post('/',      controller.add)
+    .get('/:name',  controller.get)
 
 module.exports = router.routes();
