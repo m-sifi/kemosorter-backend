@@ -1,4 +1,4 @@
-// require('dotenv').config() // Load .env if it has not been loaded before
+require('dotenv').config() // Load .env if it has not been loaded before
 
 const Koa = require('koa');
 const mount = require('koa-mount');

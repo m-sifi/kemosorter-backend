@@ -3,7 +3,12 @@ const mongoose = require('mongoose');
 const Character = new mongoose.Schema({
     name: { type: String, required: true, index: true, unique: true },
     image: { type: String, required: true },
-    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }]
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
+
+    introduction: {
+        audio: String,
+        translation: String
+    }
 }, { collection: 'character' });
 
 // Character.plugin(require('mongoose-unique-array'));
