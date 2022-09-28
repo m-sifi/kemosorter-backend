@@ -10,7 +10,7 @@ RUN npm install
 # RUN npm ci --only=production
 
 # bundle app source
-COPY . .
+COPY app/ .
 
 EXPOSE 5000
-CMD [ "node", "app/main.js" ]
+CMD [ "node", "main.js" ]
