@@ -1,4 +1,4 @@
-const env = require("utils/env")// Load .env if it has not been loaded before
+const env = require("./utils/env")// Load .env if it has not been loaded before
 
 const Koa = require('koa');
 const mount = require('koa-mount');
