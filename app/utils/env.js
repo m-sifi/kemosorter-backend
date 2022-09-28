@@ -1,4 +1,4 @@
-const dotenv = require(dotenv);
+const dotenv = require("dotenv");
 const secrets = require('./secrets');
 
 const environments = {};
