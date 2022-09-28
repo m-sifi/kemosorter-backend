@@ -35,7 +35,7 @@ module.exports = {
         let character = new Character(body);
         let error = character.validateSync();
 
-        if(token != process.env.SECRET) {
+        if(token != env.var.kemosorter.secret) {
             ctx.throw(403, 'Invalid Access-Token');
         } else {
             await db.connect(ctx);
@@ -55,7 +55,7 @@ module.exports = {
         let id = ctx.params.id;
         let body = ctx.request.body;
 
-        if(token != process.env.SECRET) {
+        if(token != env.var.kemosorter.secret) {
             ctx.throw(403, 'Invalid Access-Token');
         } else {
             await db.connect(ctx);

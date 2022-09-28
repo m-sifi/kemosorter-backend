@@ -1,3 +1,5 @@
+const env = require("../utils/env");
+
 const Category = require('../models/category');
 const Character = require('../models/character');
 const db = require('../models/db');
@@ -34,7 +36,7 @@ module.exports = {
         let category = new Category(body);
         let error = category.validateSync();
 
-        if(token != process.env.SECRET) {
+        if(token != env.vars.kemosorter.secret) {
             ctx.throw(403, 'Invalid Access-Token');
         } else {
             await db.connect(ctx);
@@ -54,7 +56,7 @@ module.exports = {
         let id = ctx.params.id;
         let body = ctx.request.body;
 
-        if(token != process.env.SECRET) {
+        if(token != env.vars.kemosorter.secret) {
             ctx.throw(403, 'Invalid Access-Token');
         } else {
             await db.connect(ctx);
