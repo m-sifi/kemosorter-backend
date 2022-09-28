@@ -12,6 +12,21 @@ https://japari-library.github.io/kemosorter/
 
 ## Build & Run
 
+### NPM
+
+```
+npm install
+npm start
+```
+
+### Docker
+```
+docker build . -t <username>/kemosorter-server
+docker run -p <host port>:<PORT> -d <username>/kemosorter-server
+```
+
+Access backend via `localhost:<host port>`
+
 ### Environment Variables
 - `DATABASE_URL` : URL to MongoDB Server
 - `SECRET` : Access Key to add/modify categories/characters
