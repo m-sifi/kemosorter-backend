@@ -1,7 +1,7 @@
 FROM node:16
 
 # create app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/
 
 # install dependencies
 COPY package*.json ./
