@@ -6,7 +6,6 @@ const Result = require('../models/result');
 const db = require('../models/db');
 const validator = require('validator');
 const _ = require('underscore');
-const _ = require('underscore');
 
 module.exports = {
     list: async ctx => {
