@@ -1,8 +1,11 @@
+const env = require("../utils/env");
+
 const Character = require('../models/character');
 const Save = require('../models/save');
 const Result = require('../models/result');
 const db = require('../models/db');
 const validator = require('validator');
+const _ = require('underscore');
 const _ = require('underscore');
 
 module.exports = {
