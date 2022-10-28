@@ -17,7 +17,8 @@ var self = module.exports = {
 
         let characters = await Character.aggregate([ where, projection, sort ]);
         // let adjectives = (await fs.readFile('../assets/adjectives.txt')).split('\n');
-        let adjectivesStream = await fetch("https://raw.githubusercontent.com/m-sifi/kemosorter-backend/master/app/assets/adjectives.txt").text();
+        let response = await fetch("https://raw.githubusercontent.com/m-sifi/kemosorter-backend/master/app/assets/adjectives.txt")
+        let adjectivesStream = await response.text();
         let adjectives = adjectivesStream.split('\n');
 
         if(top_results) {
