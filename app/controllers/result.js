@@ -6,6 +6,8 @@ const fs = require('../utils/async-fs');
 const str = require('../utils/string');
 const _ = require('underscore');
 
+const fetch = require('node-fetch');
+
 var self = module.exports = {
     generateResultName: async (results, top_results) => {
         let tmp_results = _.map(results, (x) => { return mongoose.Types.ObjectId(x); });
@@ -14,7 +16,9 @@ var self = module.exports = {
         let sort = { $sort: { '__id': 1 } };
 
         let characters = await Character.aggregate([ where, projection, sort ]);
-        let adjectives = (await fs.readFile('../assets/adjectives.txt')).split('\n');
+        // let adjectives = (await fs.readFile('../assets/adjectives.txt')).split('\n');
+        let adjectivesStream = await fetch("https://raw.githubusercontent.com/m-sifi/kemosorter-backend/master/app/assets/adjectives.txt").text();
+        let adjectives = adjectivesStream.split('\n');
 
         if(top_results) {
             return str.capitalise(_.sample(adjectives)) + str.capitalise(_.sample(adjectives)) +  _.sample(_.first(characters, 10)).name.replace(/[^a-zA-Z]+/g, '');
