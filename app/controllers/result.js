@@ -14,7 +14,7 @@ var self = module.exports = {
         let sort = { $sort: { '__id': 1 } };
 
         let characters = await Character.aggregate([ where, projection, sort ]);
-        let adjectives = (await fs.readFile('app/assets/adjectives.txt')).split('\n');
+        let adjectives = (await fs.readFile('/assets/adjectives.txt')).split('\n');
 
         if(top_results) {
             return str.capitalise(_.sample(adjectives)) + str.capitalise(_.sample(adjectives)) +  _.sample(_.first(characters, 10)).name.replace(/[^a-zA-Z]+/g, '');
